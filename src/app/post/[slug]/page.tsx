@@ -1,17 +1,33 @@
+// src/app/post/[slug]/page.tsx
 import Link from "next/link";
-import { fetchPostBySlug, fetchRelated } from "@/lib/posts";   // 👈 nieuwe imports
+import { fetchPostBySlug, fetchRelated } from "@/lib/posts";
 import ReadingProgress from "@/components/article/ReadingProgress";
 import { readingTime } from "@/lib/readingTime";
 import Hero from "@/components/article/Hero";
 import ShareButtons from "@/components/article/ShareButtons";
 import BackHomeCTA from "@/components/ui/BackHomeCTA";
 
-export const revalidate = 180; // ISR
+export const revalidate = 180;
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  // 👇 Supabase query
-  const post = await fetchPostBySlug(params.slug);
-  if (!post) return <div>Not found</div>;
+// helper: accepteert object of Promise (compat voor localhost + Next 15)
+async function resolveMaybePromise<T>(v: T | Promise<T> | undefined) {
+  const anyV = v as any;
+  if (anyV && typeof anyV.then === "function") return (await v) as T;
+  return v as T;
+}
+
+type Params = { slug: string };
+
+export default async function PostPage({
+  params,
+}: {
+  params: Params | Promise<Params>;
+}) {
+  const { slug } = (await resolveMaybePromise<Params>(params)) ?? { slug: "" };
+
+  // Supabase query
+  const post = await fetchPostBySlug(slug);
+  if (!post) return <div className="mx-auto max-w-3xl px-4 py-10">Not found</div>;
 
   const related = await fetchRelated(post);
 
@@ -28,7 +44,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
           year: "numeric",
           month: "short",
           day: "numeric",
-        })} • ${post.category} • ${post.author ?? ""} • ${readingTime(post.content)}`}
+        })} • ${post.category} • ${post.author ?? ""} • ${readingTime(post.content || "")}`}
       />
 
       {/* MAIN ARTICLE */}
@@ -52,7 +68,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
         {/* Body */}
         <div className="mx-auto max-w-3xl -mt-6 px-4 sm:px-6 lg:px-8">
           <div className="prose lg:prose-lg">
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div dangerouslySetInnerHTML={{ __html: post.content || "" }} />
           </div>
 
           {/* Share buttons */}

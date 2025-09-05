@@ -7,16 +7,21 @@ import { fetchPosts } from "@/lib/posts";
 
 export const revalidate = 120;
 
-// Breed type voor query params
+// helper: accepteert object of Promise
+async function resolveMaybePromise<T>(v: T | Promise<T> | undefined) {
+  const anyV = v as any;
+  if (anyV && typeof anyV.then === "function") return (await v) as T;
+  return v as T;
+}
+
 type SP = Record<string, string | string[] | undefined>;
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: Promise<SP>;
+  searchParams?: SP | Promise<SP>;
 }) {
-  // In Next 15 kan searchParams een Promise zijn → await
-  const sp = (await searchParams) ?? {};
+  const sp = (await resolveMaybePromise<SP>(searchParams)) ?? {};
 
   const q = (sp.q as string) || undefined;
   const category = (sp.category as string) || undefined;
@@ -39,21 +44,14 @@ export default async function Home({
 
   return (
     <>
-      {/* Reading progress bar */}
       <ReadingProgress targetId="home-root" />
-
       <div id="home-root" className="space-y-6">
-        {/* Filters */}
         <Chips />
-
-        {/* List */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((p) => (
             <PostCard key={p.slug} post={p} />
           ))}
         </section>
-
-        {/* Pagination */}
         <div className="flex justify-center pt-2">
           {hasMore ? (
             <Link
