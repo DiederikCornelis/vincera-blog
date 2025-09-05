@@ -7,11 +7,16 @@ import { fetchPosts } from "@/lib/posts";
 
 export const revalidate = 120;
 
-// brede typing zodat Next 15 niet klaagt
-type SP = { [key: string]: string | string[] | undefined };
+// Breed type voor query params
+type SP = Record<string, string | string[] | undefined>;
 
-export default async function Home({ searchParams }: { searchParams?: SP }) {
-  const sp = searchParams ?? {};
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<SP>;
+}) {
+  // In Next 15 kan searchParams een Promise zijn → await
+  const sp = (await searchParams) ?? {};
 
   const q = (sp.q as string) || undefined;
   const category = (sp.category as string) || undefined;
