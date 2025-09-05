@@ -7,30 +7,29 @@ import { fetchPosts } from "@/lib/posts";
 
 export const revalidate = 120;
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: {
-    q?: string;
-    category?: string;
-    page?: string;
-  };
-}) {
-  const page = Number(searchParams.page ?? "1");
+// brede typing zodat Next 15 niet klaagt
+type SP = { [key: string]: string | string[] | undefined };
+
+export default async function Home({ searchParams }: { searchParams?: SP }) {
+  const sp = searchParams ?? {};
+
+  const q = (sp.q as string) || undefined;
+  const category = (sp.category as string) || undefined;
+  const page = Number((sp.page as string) || "1");
 
   const { items, hasMore } = await fetchPosts({
-    q: searchParams.q,
-    category: searchParams.category,
+    q,
+    category,
     page,
     pageSize: 6,
   });
 
   const nextHref = (() => {
-    const q = new URLSearchParams();
-    if (searchParams.q) q.set("q", searchParams.q);
-    if (searchParams.category) q.set("category", searchParams.category);
-    q.set("page", String(page + 1));
-    return `/?${q.toString()}`;
+    const qs = new URLSearchParams();
+    if (q) qs.set("q", q);
+    if (category) qs.set("category", category);
+    qs.set("page", String(page + 1));
+    return `/?${qs.toString()}`;
   })();
 
   return (
@@ -39,7 +38,7 @@ export default async function Home({
       <ReadingProgress targetId="home-root" />
 
       <div id="home-root" className="space-y-6">
-        {/* Filters (category/search) */}
+        {/* Filters */}
         <Chips />
 
         {/* List */}
