@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CategoryDropdown from "./ui/CategoryDropdown";
 import SearchInput from "./ui/SearchInput";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 
 const MAIN = process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://www.vncra.com";
 
@@ -58,10 +58,14 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Right: controls */}
+        {/* Right: wrap CSR hooks in Suspense to satisfy Next 15 */}
         <div className="flex items-center gap-3">
-          <CategoryDropdown />
-          <SearchInput />
+          <Suspense fallback={null}>
+            <CategoryDropdown />
+          </Suspense>
+          <Suspense fallback={null}>
+            <SearchInput />
+          </Suspense>
         </div>
       </div>
     </header>
