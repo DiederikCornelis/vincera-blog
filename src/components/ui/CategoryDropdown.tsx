@@ -22,48 +22,60 @@ export default function CategoryDropdown() {
 
   const apply = (val: string) => {
     const q = new URLSearchParams(params.toString());
-    if (val) q.set("category", val); else q.delete("category");
+    if (val) q.set("category", val);
+    else q.delete("category");
     q.delete("page");
     router.push(`/?${q.toString()}`);
     setOpen(false);
   };
 
-  const label = current || "All categories";
+  // Kort label zoals je vroeg
+  const label = current || "Categories";
 
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
-        onClick={() => setOpen(v => !v)}
-        className="h-9 rounded border border-black/15 bg-white text-black px-3 text-sm inline-flex items-center gap-2"
+        onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Select category"
+        className="
+          h-9 px-3 text-[13px] whitespace-nowrap rounded-md border border-black/15 bg-white text-black/70
+          hover:bg-black/5
+          sm:h-10 sm:px-3.5 sm:text-sm
+        "
       >
-        {label}
-        <span className={`transition-transform ${open ? "rotate-180" : ""}`}>▼</span>
+        {label} <span className={`ml-1 inline-block transition-transform ${open ? "rotate-180" : ""}`}>▼</span>
       </button>
 
       {open && (
         <div
-          className="absolute left-0 top-full z-30 mt-1 w-56 rounded-lg border border-black/10 bg-white shadow-xl overflow-hidden menu-anim"
-          data-open="true"
+          className="
+            absolute left-0 top-full z-30 mt-1
+            w-48 sm:w-56 rounded-lg border border-black/10 bg-white shadow-xl overflow-hidden
+          "
           role="listbox"
           aria-label="Categories"
         >
           <button
             onClick={() => apply("")}
-            className={`w-full text-left px-3 py-2 text-sm text-black hover:bg-black/5 ${current === "" ? "bg-black/5" : ""}`}
+            className={`w-full text-left px-3 py-2 text-[13px] sm:text-sm text-black hover:bg-black/5 ${
+              current === "" ? "bg-black/5" : ""
+            }`}
             role="option"
             aria-selected={current === ""}
           >
             All categories
           </button>
+
           {CATEGORIES.map((c) => (
             <button
               key={c}
               onClick={() => apply(c)}
-              className={`w-full text-left px-3 py-2 text-sm text-black hover:bg-black/5 ${current === c ? "bg-black/5" : ""}`}
+              className={`w-full text-left px-3 py-2 text-[13px] sm:text-sm text-black hover:bg-black/5 ${
+                current === c ? "bg-black/5" : ""
+              }`}
               role="option"
               aria-selected={current === c}
             >

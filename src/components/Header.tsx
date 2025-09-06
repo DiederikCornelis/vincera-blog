@@ -30,36 +30,43 @@ export default function Header() {
         hidden ? "-translate-y-16" : "translate-y-0"
       }`}
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Left: logo + divider + Blog */}
-        <div className="flex items-center gap-3">
-          <Link
-            href={MAIN}
-            className="flex items-center group"
-            aria-label="Back to VINCERA Home"
-          >
+      <div className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+        {/* Left: logo + streep + Blog (ongewijzigd) */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link href={MAIN} className="flex items-center group" aria-label="Back to VINCERA Home">
             <Image
               src="/logo.png"
               alt="VINCERA Logo"
               width={160}
               height={36}
               priority
-              className="h-7 w-auto sm:h-8 transition duration-300 group-hover:brightness-150 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+              className="h-6 w-auto sm:h-8 transition duration-300 group-hover:brightness-150 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
             />
           </Link>
 
-          <span className="hidden sm:inline-block h-5 w-px bg-black/10 mx-1" />
+          <span className="inline-block h-4 sm:h-5 w-px bg-black/10 mx-1" />
 
           <Link
             href="/"
-            className="text-sm font-medium text-black/70 hover:text-black transition-colors"
+            className="text-xs sm:text-sm font-medium text-black/70 hover:text-black transition-colors"
           >
             Blog
           </Link>
         </div>
 
-        {/* Right: wrap CSR hooks in Suspense to satisfy Next 15 */}
-        <div className="flex items-center gap-3">
+        {/* RIGHT CONTROLS */}
+        {/* Desktop (>=640px): exact zoals je had */}
+        <div className="hidden sm:flex items-center gap-3">
+          <Suspense fallback={null}>
+            <CategoryDropdown />
+          </Suspense>
+          <Suspense fallback={null}>
+            <SearchInput />
+          </Suspense>
+        </div>
+
+        {/* Mobiel (<640px): compacter */}
+        <div className="flex sm:hidden items-center gap-2">
           <Suspense fallback={null}>
             <CategoryDropdown />
           </Suspense>

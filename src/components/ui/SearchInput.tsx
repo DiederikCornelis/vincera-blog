@@ -15,20 +15,32 @@ export default function SearchInput() {
       onSubmit={(e) => {
         e.preventDefault();
         const s = new URLSearchParams(params.toString());
-        if (q) s.set("q", q); else s.delete("q");
+        if (q) s.set("q", q);
+        else s.delete("q");
         s.delete("page");
         router.push(`/?${s.toString()}`);
       }}
-      className="flex items-center"
+      className="relative min-w-0 w-28 sm:w-64"  /* mobiel smal, desktop jouw oude breedte */
       aria-label="Search posts"
     >
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search…"
-        className="h-9 w-44 sm:w-64 rounded border border-black/15 bg-white px-3 text-sm"
         aria-label="Search"
+        className="
+          w-full h-9 rounded-md border border-black/15 bg-white
+          pl-8 pr-3 text-[13px] placeholder:text-black/40
+          focus:outline-none focus:ring-2 focus:ring-blue-400
+          sm:h-10 sm:text-sm sm:pl-9
+        "
       />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-black/40 text-sm sm:text-base"
+      >
+        🔎
+      </span>
     </form>
   );
 }
