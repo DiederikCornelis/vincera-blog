@@ -3,7 +3,15 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { CHIPS } from "@/lib/data";
 
-const MOBILE_CHIPS = ["Entrepreneurs", "Creators", "Athletes", "Professionals"];
+// 👉 Alleen deze op mobiel laten zien
+const MOBILE_CHIPS = [
+  "Entrepreneurs",
+  "Creators",
+  "Artists",
+  "Athletes",
+  "Professionals",
+  "Leaders",
+];
 
 export default function Chips() {
   const router = useRouter();
@@ -20,7 +28,7 @@ export default function Chips() {
 
   return (
     <>
-      {/* Mobiel: alleen de 4 gekozen */}
+      {/* Mobiel: alleen de gekozen 6 */}
       <div className="flex flex-wrap gap-2 sm:hidden">
         {MOBILE_CHIPS.map((c) => {
           const isActive = active === c;
@@ -43,7 +51,7 @@ export default function Chips() {
         })}
       </div>
 
-      {/* Desktop: alle categorieën */}
+      {/* Desktop: alle categorieën zoals gedefinieerd in lib/data */}
       <div className="hidden sm:flex flex-wrap gap-2">
         {CHIPS.map((c) => {
           const isActive = active === c;
