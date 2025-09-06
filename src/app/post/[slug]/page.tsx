@@ -50,6 +50,7 @@ export default async function PostPage({
       />
 
       <article id="article-root" className="relative z-10">
+        {/* Breadcrumbs */}
         <nav className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-4 text-sm text-black/60">
           <Link
             href={process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://www.vncra.com"}
@@ -68,6 +69,7 @@ export default async function PostPage({
           › <span className="text-black">{post.title}</span>
         </nav>
 
+        {/* Article body */}
         <div className="mx-auto max-w-3xl -mt-6 px-4 sm:px-6 lg:px-8">
           <div className="prose lg:prose-lg">
             <div dangerouslySetInnerHTML={{ __html: post.content || "" }} />
@@ -77,6 +79,7 @@ export default async function PostPage({
             <ShareButtons title={post.title} path={`/post/${post.slug}`} />
           </div>
 
+          {/* Related posts */}
           {related.length > 0 && (
             <section className="mt-16">
               <h2 className="text-xl font-semibold mb-6">More like this</h2>
@@ -103,6 +106,7 @@ export default async function PostPage({
             </section>
           )}
 
+          {/* CTA */}
           <div className="mt-12">
             <BackHomeCTA />
           </div>
