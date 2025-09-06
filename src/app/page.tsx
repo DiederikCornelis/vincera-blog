@@ -5,7 +5,9 @@ import Link from "next/link";
 import ReadingProgress from "@/components/article/ReadingProgress";
 import { fetchPosts } from "@/lib/posts";
 
-export const revalidate = 120;
+// 🚀 Force dynamic runtime
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // helper: accepteert object of Promise
 async function resolveMaybePromise<T>(v: T | Promise<T> | undefined) {
