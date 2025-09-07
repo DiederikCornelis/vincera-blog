@@ -1,4 +1,3 @@
-// src/app/post/[slug]/page.tsx
 import Link from "next/link";
 import { fetchPostBySlug, fetchRelated } from "@/lib/posts";
 import ReadingProgress from "@/components/article/ReadingProgress";
@@ -6,6 +5,7 @@ import { readingTime } from "@/lib/readingTime";
 import Hero from "@/components/article/Hero";
 import ShareButtons from "@/components/article/ShareButtons";
 import BackHomeCTA from "@/components/ui/BackHomeCTA";
+import type { Metadata } from "next";
 
 // 🚀 Force dynamic runtime
 export const dynamic = "force-dynamic";
@@ -19,6 +19,43 @@ async function resolveMaybePromise<T>(v: T | Promise<T> | undefined) {
 }
 
 type Params = { slug: string };
+
+// 🎯 Dynamic metadata per artikel
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { slug } = await resolveMaybePromise<Params>(params);
+  const post = await fetchPostBySlug(slug);
+
+  if (!post) return { title: "Post not found" };
+
+  const url = `https://blog.vncra.com/post/${post.slug}`;
+  const image = post.cover || "https://blog.vncra.com/og-default.jpg";
+
+  return {
+    title: post.title,
+    description: post.excerpt || "Read this article on VINCERA Blog.",
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || "",
+      url,
+      siteName: "VINCERA Blog",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt || "",
+      images: [image],
+    },
+  };
+}
 
 export default async function PostPage({
   params,
