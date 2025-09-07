@@ -5,11 +5,9 @@ import Link from "next/link";
 import ReadingProgress from "@/components/article/ReadingProgress";
 import { fetchPosts } from "@/lib/posts";
 
-// 🚀 Force dynamic runtime
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// helper: accepteert object of Promise
 async function resolveMaybePromise<T>(v: T | Promise<T> | undefined) {
   const anyV = v as any;
   if (anyV && typeof anyV.then === "function") return (await v) as T;
@@ -25,13 +23,15 @@ export default async function Home({
 }) {
   const sp = (await resolveMaybePromise<SP>(searchParams)) ?? {};
 
-  const q = (sp.q as string) || undefined;
+  const q        = (sp.q as string) || undefined;
   const category = (sp.category as string) || undefined;
-  const page = Number((sp.page as string) || "1");
+  const chip     = (sp.chip as string) || undefined;   // 👈 nieuw
+  const page     = Number((sp.page as string) || "1");
 
   const { items, hasMore } = await fetchPosts({
     q,
     category,
+    chip,                                             // 👈 nieuw
     page,
     pageSize: 6,
   });
@@ -40,6 +40,7 @@ export default async function Home({
     const qs = new URLSearchParams();
     if (q) qs.set("q", q);
     if (category) qs.set("category", category);
+    if (chip) qs.set("chip", chip);                  // 👈 nieuw
     qs.set("page", String(page + 1));
     return `/?${qs.toString()}`;
   })();

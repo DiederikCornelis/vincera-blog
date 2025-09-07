@@ -5,6 +5,7 @@ import { CHIPS } from "@/lib/data";
 
 // 👉 Alleen deze op mobiel laten zien
 const MOBILE_CHIPS = [
+  "All categories",   // 👈 toegevoegd
   "Entrepreneurs",
   "Creators",
   "Artists",
@@ -20,18 +21,22 @@ export default function Chips() {
 
   const push = (v: string) => {
     const q = new URLSearchParams(params.toString());
-    if (active === v) q.delete("chip");
-    else q.set("chip", v);
+    if (v === "All categories") {
+      q.delete("chip"); // 👈 reset filter
+    } else {
+      q.set("chip", v);
+    }
     q.delete("page");
     router.push(`/?${q.toString()}`);
   };
 
   return (
     <>
-      {/* Mobiel: alleen de gekozen 6 */}
+      {/* Mobiel: alleen de gekozen chips */}
       <div className="flex flex-wrap gap-2 sm:hidden">
         {MOBILE_CHIPS.map((c) => {
-          const isActive = active === c;
+          const isActive =
+            (c === "All categories" && !active) || active === c;
           return (
             <button
               key={c}
@@ -51,10 +56,11 @@ export default function Chips() {
         })}
       </div>
 
-      {/* Desktop: alle categorieën zoals gedefinieerd in lib/data */}
+      {/* Desktop: alle categorieën inclusief 'All categories' */}
       <div className="hidden sm:flex flex-wrap gap-2">
-        {CHIPS.map((c) => {
-          const isActive = active === c;
+        {["All categories", ...CHIPS].map((c) => {
+          const isActive =
+            (c === "All categories" && !active) || active === c;
           return (
             <button
               key={c}

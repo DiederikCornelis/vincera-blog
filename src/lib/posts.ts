@@ -8,8 +8,8 @@ export type Post = {
   excerpt: string | null;
   content: string;
   category: string;
-  tags: string[] | null;
-  date: string;          // ISO string
+  tags: string | null;    // bij jou staat 'tags' als text, dus geen array
+  date: string;           // ISO string
   cover: string | null;
   author: string | null;
 };
@@ -17,23 +17,37 @@ export type Post = {
 export async function fetchPosts(opts: {
   q?: string;
   category?: string;
+  chip?: string;               // 👈 nieuw
   page?: number;
   pageSize?: number;
 }) {
-  const { q, category, page = 1, pageSize = 6 } = opts;
+  const { q, category, chip, page = 1, pageSize = 6 } = opts;
 
   try {
     let query = supabase
       .from("posts")
-      .select(
-        "id, slug, title, excerpt, category, tags, date, cover, author",
-        { count: "exact" }
-      )
+      .select("id, slug, title, excerpt, category, tags, date, cover, author", { count: "exact" })
       .order("date", { ascending: false });
 
-    if (category) query = query.eq("category", category);
+    if (category) {
+      query = query.eq("category", category);
+    }
+
     if (q && q.trim()) {
-      query = query.or(`title.ilike.%${q}%,excerpt.ilike.%${q}%`);
+      query = query.or(
+        `title.ilike.%${q}%,excerpt.ilike.%${q}%,tags.ilike.%${q}%`
+      );
+    }
+
+    // 👇 CHIP-filter toevoegen
+    if (chip && chip.trim()) {
+      const term = chip.trim();
+      // Als er geen category actief is, laat chip ook category matchen
+      const chipOr = category
+        ? `title.ilike.%${term}%,excerpt.ilike.%${term}%,tags.ilike.%${term}%`
+        : `category.eq.${term},title.ilike.%${term}%,excerpt.ilike.%${term}%,tags.ilike.%${term}%`;
+
+      query = query.or(chipOr);
     }
 
     const from = (page - 1) * pageSize;
